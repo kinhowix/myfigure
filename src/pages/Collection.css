@@ -1,0 +1,92 @@
+.page-container {
+  padding: 0 0 2rem 0;
+}
+
+.header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg-color);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--surface-highlight);
+}
+
+.group-selector {
+  padding: 0 1rem;
+}
+
+.group-dropdown {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--surface-color);
+  color: var(--text-primary);
+  border: 1px solid var(--surface-highlight);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.group-dropdown:focus {
+  border-color: var(--primary-color);
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.sticker-card {
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sticker-card:active {
+  transform: scale(0.95);
+}
+
+.sticker-card.missing {
+  background-color: var(--surface-color);
+  color: var(--text-secondary);
+  border: 1px solid var(--surface-highlight);
+}
+
+.sticker-card.owned {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.repeated-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: var(--danger-color);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hint {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
+}
