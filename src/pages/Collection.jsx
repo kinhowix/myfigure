@@ -3,14 +3,21 @@ import { useStickers } from '../context/StickerContext';
 import { stickerGroups } from '../data/stickersConfig';
 import './Collection.css';
 
-import { LogOut } from 'lucide-react';
+import { LogOut, Search } from 'lucide-react';
 
 export default function Collection() {
   const { stickers, incrementSticker, decrementSticker, logout } = useStickers();
   const [selectedGroupId, setSelectedGroupId] = useState(stickerGroups[0].id);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const activeGroup = stickerGroups.find(g => g.id === selectedGroupId);
   const isCocaCola = activeGroup.id === 'cc';
+
+  // Filter groups for the dropdown based on search
+  const filteredGroups = stickerGroups.filter(group => 
+    group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    group.prefix.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Generates the codes for the active group
   const getActiveGroupCodes = () => {
@@ -45,6 +52,19 @@ export default function Collection() {
             <LogOut size={20} />
           </button>
         </div>
+
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <Search size={16} className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Buscar seleção..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        </div>
         
         <div className="group-selector">
           <select 
@@ -52,11 +72,14 @@ export default function Collection() {
             onChange={(e) => setSelectedGroupId(e.target.value)}
             className="group-dropdown"
           >
-            {stickerGroups.map(group => (
+            {filteredGroups.map(group => (
               <option key={group.id} value={group.id}>
                 {group.name}
               </option>
             ))}
+            {filteredGroups.length === 0 && (
+              <option disabled>Nenhuma seleção encontrada</option>
+            )}
           </select>
         </div>
       </div>

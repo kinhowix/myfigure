@@ -50,6 +50,21 @@ export default function Stats() {
             <span className="stat-value">{stats.repeated}</span>
           </div>
         </div>
+
+        <div className="danger-zone">
+          <button 
+            className="reset-btn" 
+            onClick={() => {
+              if (window.confirm('Tem certeza que deseja apagar TODAS as figurinhas marcadas? Esta ação não pode ser desfeita.')) {
+                resetAlbum();
+                alert('Álbum resetado com sucesso!');
+              }
+            }}
+          >
+            Limpar Todo o Álbum
+          </button>
+          <p className="danger-hint">Atenção: Isso removerá todas as figurinhas coladas.</p>
+        </div>
       </div>
     </div>
   );

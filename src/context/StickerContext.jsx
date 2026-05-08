@@ -87,6 +87,12 @@ export const StickerProvider = ({ children }) => {
     auth.signOut();
   };
 
+  const resetAlbum = () => {
+    const emptyMap = generateEmptyStickersMap();
+    setStickers(emptyMap);
+    updateFirebase(emptyMap);
+  };
+
   // Stats calculation
   const stats = {
     total: getTotalStickersCount(),
@@ -110,6 +116,7 @@ export const StickerProvider = ({ children }) => {
       decrementSticker,
       updateNote,
       logout,
+      resetAlbum,
       stats
     }}>
       {children}
