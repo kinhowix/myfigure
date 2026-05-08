@@ -93,6 +93,15 @@ export const StickerProvider = ({ children }) => {
     updateFirebase(emptyMap);
   };
 
+  const removeSticker = (code) => {
+    setStickers(prev => {
+      const current = prev[code] || { count: 0, note: '' };
+      const next = { ...prev, [code]: { ...current, count: 0 } };
+      updateFirebase(next);
+      return next;
+    });
+  };
+
   // Stats calculation
   const stats = {
     total: getTotalStickersCount(),
@@ -117,6 +126,7 @@ export const StickerProvider = ({ children }) => {
       updateNote,
       logout,
       resetAlbum,
+      removeSticker,
       stats
     }}>
       {children}

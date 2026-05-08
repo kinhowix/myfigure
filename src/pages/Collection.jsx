@@ -6,7 +6,7 @@ import './Collection.css';
 import { LogOut, Search } from 'lucide-react';
 
 export default function Collection() {
-  const { stickers, incrementSticker, decrementSticker, logout } = useStickers();
+  const { stickers, incrementSticker, removeSticker, logout } = useStickers();
   const [selectedGroupId, setSelectedGroupId] = useState(stickerGroups[0].id);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -102,7 +102,11 @@ export default function Collection() {
               onClick={() => incrementSticker(code)}
               onContextMenu={(e) => {
                 e.preventDefault();
-                decrementSticker(code);
+                if (stickerData.count > 0) {
+                  if (window.confirm('Deseja limpar esta figurinha?')) {
+                    removeSticker(code);
+                  }
+                }
               }}
             >
               <div className="sticker-info">
@@ -116,7 +120,6 @@ export default function Collection() {
           );
         })}
       </div>
-      <p className="hint">Toque para adicionar, segure para remover.</p>
     </div>
   );
 }
