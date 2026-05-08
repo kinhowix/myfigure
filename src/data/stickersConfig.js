@@ -60,7 +60,7 @@ export const stickerGroups = [
   { id: 'cro', name: 'Croácia', prefix: 'CRO', count: 20, color: '#ff0000', flag: 'hr' },
   { id: 'gha', name: 'Gana', prefix: 'GHA', count: 20, color: '#cf0921', flag: 'gh' },
   { id: 'pan', name: 'Panamá', prefix: 'PAN', count: 20, color: '#005293', flag: 'pa' },
-  { id: 'cc', name: 'Coca-Cola', prefix: 'CC', count: 12, color: '#e41e2b', flag: 'cc' }
+  { id: 'cc', name: 'Coca-Cola', prefix: 'CC', count: 14, color: '#e41e2b', flag: 'cc' }
 ];
 
 // Helper para gerar todas as figurinhas vazias para contagem e inicialização
