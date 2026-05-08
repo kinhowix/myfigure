@@ -55,7 +55,10 @@ export default function Collection() {
                 decrementSticker(code);
               }}
             >
-              <span className="sticker-number">{code.replace(activeGroup.prefix + ' ', '')}</span>
+              <div className="sticker-info">
+                <span className="sticker-prefix">{activeGroup.prefix}</span>
+                <span className="sticker-number">{code.replace(activeGroup.prefix + ' ', '')}</span>
+              </div>
               {stickerData.count > 1 && (
                 <span className="repeated-badge">+{stickerData.count - 1}</span>
               )}
