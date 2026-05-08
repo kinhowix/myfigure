@@ -5,6 +5,7 @@ import Collection from './pages/Collection';
 import Repeated from './pages/Repeated';
 import Stats from './pages/Stats';
 import Login from './pages/Login';
+import Landing from './pages/Landing';
 
 function App() {
   const { user, loading } = useStickers();
@@ -14,16 +15,22 @@ function App() {
   }
 
   if (!user) {
-    return <Login />;
+    return (
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
   }
 
   return (
     <div className="app-container">
       <Routes>
-        <Route path="/" element={<Collection />} />
+        <Route path="/collection" element={<Collection />} />
         <Route path="/repeated" element={<Repeated />} />
         <Route path="/stats" element={<Stats />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/collection" />} />
       </Routes>
       <BottomNav />
     </div>

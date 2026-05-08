@@ -5,7 +5,7 @@ import './BottomNav.css';
 export default function BottomNav() {
   return (
     <nav className="bottom-nav">
-      <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+      <NavLink to="/collection" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <BookOpen size={24} />
         <span>Coleção</span>
       </NavLink>

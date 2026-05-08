@@ -1,8 +1,10 @@
 import { useStickers } from '../context/StickerContext';
 import './Repeated.css';
 
+import { LogOut } from 'lucide-react';
+
 export default function Repeated() {
-  const { stickers, updateNote, incrementSticker, decrementSticker } = useStickers();
+  const { stickers, updateNote, incrementSticker, decrementSticker, logout } = useStickers();
   
   // Transform object to array and filter repeated
   const repeatedStickers = Object.entries(stickers)
@@ -12,7 +14,14 @@ export default function Repeated() {
 
   return (
     <div className="page-container">
-      <h1>Figurinhas Repetidas</h1>
+      <div className="header-sticky">
+        <div className="header-top">
+          <h1>Figurinhas Repetidas</h1>
+          <button className="logout-btn" onClick={logout} title="Sair">
+            <LogOut size={20} />
+          </button>
+        </div>
+      </div>
       
       {repeatedStickers.length === 0 ? (
         <div className="empty-state">

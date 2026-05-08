@@ -83,6 +83,10 @@ export const StickerProvider = ({ children }) => {
     });
   };
 
+  const logout = () => {
+    auth.signOut();
+  };
+
   // Stats calculation
   const stats = {
     total: getTotalStickersCount(),
@@ -105,6 +109,7 @@ export const StickerProvider = ({ children }) => {
       incrementSticker,
       decrementSticker,
       updateNote,
+      logout,
       stats
     }}>
       {children}
