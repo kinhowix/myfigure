@@ -33,6 +33,13 @@ export default function Collection() {
 
   const activeCodes = getActiveGroupCodes();
 
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && filteredGroups.length > 0) {
+      setSelectedGroupId(filteredGroups[0].id);
+      setSearchQuery('');
+    }
+  };
+
   return (
     <div className={`page-container ${isCocaCola ? 'coca-cola-theme' : ''}`} style={{ '--team-color': activeGroup.color }}>
       <div className="header-sticky">
@@ -61,6 +68,7 @@ export default function Collection() {
               placeholder="Buscar seleção..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               className="search-input"
             />
           </div>

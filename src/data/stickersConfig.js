@@ -1,5 +1,5 @@
 export const stickerGroups = [
-  { id: 'specials', name: 'Especiais', prefix: 'FWC', hasZero: true, count: 9, color: '#1a1a1a', flag: 'un' },
+  { id: 'specials', name: 'Especiais', prefix: 'FWC', hasZero: true, count: 19, color: '#1a1a1a', flag: 'un' },
   // Grupo A
   { id: 'kor', name: 'Coréia do Sul', prefix: 'KOR', count: 20, color: '#0047a0', flag: 'kr' },
   { id: 'mex', name: 'México', prefix: 'MEX', count: 20, color: '#006847', flag: 'mx' },
