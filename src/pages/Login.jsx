@@ -3,7 +3,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import './Login.css';
 
+import { useNavigate } from 'react-router-dom';
+
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,6 +30,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box">
+        <button className="back-link" onClick={() => navigate('/')}>&larr; Voltar</button>
         <h1>MyFigure</h1>
         <p className="login-subtitle">O álbum da família</p>
 

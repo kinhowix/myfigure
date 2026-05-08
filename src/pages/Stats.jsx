@@ -1,13 +1,22 @@
 import { useStickers } from '../context/StickerContext';
 import './Stats.css';
 
+import { LogOut } from 'lucide-react';
+
 export default function Stats() {
-  const { stats } = useStickers();
+  const { stats, logout } = useStickers();
   const percentage = ((stats.owned / stats.total) * 100).toFixed(1);
 
   return (
     <div className="page-container">
-      <h1>Estatísticas</h1>
+      <div className="header-sticky">
+        <div className="header-top">
+          <h1>Estatísticas</h1>
+          <button className="logout-btn" onClick={logout} title="Sair">
+            <LogOut size={20} />
+          </button>
+        </div>
+      </div>
       
       <div className="stats-content">
         <div className="progress-section">

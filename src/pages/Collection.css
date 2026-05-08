@@ -1,14 +1,7 @@
 .page-container {
-  padding: 0 0 2rem 0;
-}
-
-.header-sticky {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: var(--bg-color);
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--surface-highlight);
+  padding: 0 0 5rem 0;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .group-selector {
@@ -41,17 +34,35 @@
 .sticker-card {
   aspect-ratio: 3/4;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  font-weight: bold;
-  font-size: 1.1rem;
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.sticker-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.sticker-prefix {
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+.sticker-number {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .sticker-card:active {
@@ -65,9 +76,50 @@
 }
 
 .sticker-card.owned {
-  background-color: var(--primary-color);
+  background-color: var(--team-color);
   color: white;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Coca-Cola Theme */
+.coca-cola-theme {
+  background-color: #e41e2b;
+}
+
+.coca-cola-theme .header-sticky {
+  background-color: #e41e2b;
+  border-bottom-color: white;
+}
+
+.coca-cola-theme .team-header h1 {
+  color: white;
+}
+
+.coca-cola-theme .group-dropdown {
+  background-color: #b31621;
+  border-color: white;
+}
+
+.coca-cola-theme .sticker-card.missing {
+  background-color: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+  color: white;
+}
+
+.coca-cola-theme .sticker-card.owned {
+  background-color: white;
+  color: #e41e2b;
+}
+
+.coca-cola-theme .hint {
+  color: rgba(255,255,255,0.7);
+}
+
+.coca-cola-logo {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
 }
 
 .repeated-badge {
