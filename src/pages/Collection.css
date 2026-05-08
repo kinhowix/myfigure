@@ -1,7 +1,70 @@
 .page-container {
   padding: 0 0 5rem 0;
   min-height: 100vh;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  background-color: var(--team-color);
+}
+
+.header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--team-color);
+  padding: 1rem 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Ensure text in header is readable on team colors */
+.team-header h1 {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.logout-btn {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.logout-btn:hover {
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.search-container {
+  padding: 0 1rem 0.8rem 1rem;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 0.6rem 0.6rem 2.2rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input:focus {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: white;
 }
 
 .group-selector {
@@ -11,24 +74,30 @@
 .group-dropdown {
   width: 100%;
   padding: 0.8rem;
-  background-color: var(--surface-color);
-  color: var(--text-primary);
-  border: 1px solid var(--surface-highlight);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
 }
 
-.group-dropdown:focus {
-  border-color: var(--primary-color);
+.group-dropdown option {
+  background-color: var(--surface-color);
+  color: var(--text-primary);
 }
 
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 0.5rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
 }
 
 .sticker-card {
@@ -44,6 +113,7 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .sticker-info {
@@ -70,52 +140,23 @@
 }
 
 .sticker-card.missing {
-  background-color: var(--surface-color);
-  color: var(--text-secondary);
-  border: 1px solid var(--surface-highlight);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .sticker-card.owned {
-  background-color: var(--team-color);
-  color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Coca-Cola Theme */
-.coca-cola-theme {
-  background-color: #e41e2b;
-}
-
-.coca-cola-theme .header-sticky {
-  background-color: #e41e2b;
-  border-bottom-color: white;
-}
-
-.coca-cola-theme .team-header h1 {
-  color: white;
-}
-
-.coca-cola-theme .group-dropdown {
-  background-color: #b31621;
-  border-color: white;
-}
-
-.coca-cola-theme .sticker-card.missing {
-  background-color: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.3);
-  color: white;
-}
-
-.coca-cola-theme .sticker-card.owned {
   background-color: white;
-  color: #e41e2b;
+  color: var(--team-color);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-.coca-cola-theme .hint {
-  color: rgba(255,255,255,0.7);
+.sticker-card.owned .sticker-prefix {
+  opacity: 1;
 }
 
-.coca-cola-logo {
+/* Coca-Cola Theme specifically */
+.coca-cola-theme .coca-cola-logo {
   font-family: 'Brush Script MT', cursive;
   font-size: 1.5rem;
   color: white;
@@ -126,18 +167,19 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  background-color: var(--danger-color);
-  color: white;
+  background-color: #ffca28;
+  color: #000;
   font-size: 0.7rem;
-  font-weight: bold;
+  font-weight: 900;
   padding: 2px 6px;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  border: 1.5px solid white;
 }
 
 .hint {
   text-align: center;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.8rem;
   margin-top: 1rem;
   padding: 0 1rem;
