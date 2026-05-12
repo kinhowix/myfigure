@@ -35,7 +35,7 @@ export const StickerProvider = ({ children }) => {
     }, 5000);
 
     const albumRef = doc(db, 'albums', 'familia');
-    
+
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       clearTimeout(safetyTimeout);
       if (docSnap.exists()) {
