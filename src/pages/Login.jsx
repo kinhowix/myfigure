@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import './Login.css';
 
@@ -18,6 +18,9 @@ export default function Login() {
     setLoading(true);
 
     try {
+      // Define a persistência como LOCAL antes de fazer o login
+      // Isso garante que a sessão dure mesmo após fechar o navegador/app
+      await setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       console.error(err);
