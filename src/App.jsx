@@ -11,7 +11,29 @@ function App() {
   const { user, loading } = useStickers();
 
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'white' }}>Carregando álbum...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh', 
+        color: 'white',
+        background: '#0f172a',
+        gap: '1rem'
+      }}>
+        <div style={{
+          width: '48px',
+          height: '48px',
+          border: '4px solid #334155',
+          borderTop: '4px solid #10b981',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Carregando álbum...</p>
+      </div>
+    );
   }
 
   if (!user) {
