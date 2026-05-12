@@ -16,8 +16,10 @@ export const StickerProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
+        // Sem usuário logado, libera o loading imediatamente
         setLoading(false);
       }
+      // Se há usuário, o loading será liberado pelo onSnapshot do Firestore
     });
     return () => unsubscribe();
   }, []);
@@ -26,9 +28,16 @@ export const StickerProvider = ({ children }) => {
   useEffect(() => {
     if (!user) return;
 
+    // Timeout de segurança: se o Firestore demorar mais de 5s, libera o loading
+    // para evitar tela azul travada (problemas de rede no celular)
+    const safetyTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
     const albumRef = doc(db, 'albums', 'familia');
     
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
+      clearTimeout(safetyTimeout);
       if (docSnap.exists()) {
         const data = docSnap.data().stickers;
         // Merge with empty map in case new codes were added to config
@@ -39,11 +48,15 @@ export const StickerProvider = ({ children }) => {
       }
       setLoading(false);
     }, (error) => {
+      clearTimeout(safetyTimeout);
       console.error("Error fetching album:", error);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      unsubscribe();
+    };
   }, [user]);
 
   // Actions
