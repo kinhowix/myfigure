@@ -79,20 +79,4 @@
   text-align: center;
 }
 
-.note-input {
-  width: 100%;
-  background-color: rgba(0,0,0,0.2);
-  border: 1px solid var(--surface-highlight);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 0.9rem;
-  resize: vertical;
-  min-height: 60px;
-}
 
-.note-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}

@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../firebase/config';
-import { generateEmptyStickersMap, getTotalStickersCount } from '../data/stickersConfig';
+import { stickerGroups, generateEmptyStickersMap, getTotalStickersCount } from '../data/stickersConfig';
 
 const StickerContext = createContext();
 
@@ -44,19 +44,60 @@ export const StickerProvider = ({ children }) => {
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       if (docSnap.exists()) {
-        const data = docSnap.data().stickers;
-        console.log("Album data received");
-        // Merge with empty map in case new codes were added to config
-        setStickers(prev => ({ ...prev, ...data }));
+        const dbData = docSnap.data().stickers || {};
+        const emptyMap = generateEmptyStickersMap();
+        
+        // Create a fast lookup map (no spaces, uppercase)
+        const dbLookup = {};
+        Object.entries(dbData).forEach(([key, val]) => {
+          if (key && val) {
+            const normalizedKey = key.replace(/\s+/g, '').toUpperCase();
+            dbLookup[normalizedKey] = val;
+          }
+        });
+
+        // Map database data to current config format
+        const mergedStickers = { ...emptyMap };
+        Object.keys(mergedStickers).forEach(configKey => {
+          const normalizedConfigKey = configKey.replace(/\s+/g, '').toUpperCase();
+          
+          // 1. Try exact match
+          if (dbData[configKey]) {
+            mergedStickers[configKey] = dbData[configKey];
+          } 
+          // 2. Try normalized match (handles "BRA1" vs "BRA 1")
+          else if (dbLookup[normalizedConfigKey]) {
+            mergedStickers[configKey] = dbLookup[normalizedConfigKey];
+          }
+          // 3. Try flag-based fallback (handles prefix changes like "BR" -> "BRA")
+          else {
+            const parts = configKey.split(' ');
+            const prefix = parts[0];
+            const number = parts[1] || '';
+            const group = stickerGroups.find(g => g.prefix === prefix);
+            
+            if (group && group.flag) {
+              const flagPrefix = group.flag.toUpperCase();
+              const flagKey = number ? `${flagPrefix} ${number}` : flagPrefix;
+              const normalizedFlagKey = flagKey.replace(/\s+/g, '').toUpperCase();
+              
+              if (dbData[flagKey]) {
+                mergedStickers[configKey] = dbData[flagKey];
+              } else if (dbLookup[normalizedFlagKey]) {
+                mergedStickers[configKey] = dbLookup[normalizedFlagKey];
+              }
+            }
+          }
+        });
+
+        setStickers(mergedStickers);
       } else {
         console.log("Album not found, creating new one");
-        // First time initialization
         setDoc(albumRef, { stickers: generateEmptyStickersMap() });
       }
       setLoading(false);
     }, (error) => {
       console.error("Error fetching album:", error);
-      // Even on error, we must stop loading so the app can render something
       setLoading(false);
     });
 
@@ -91,24 +132,13 @@ export const StickerProvider = ({ children }) => {
     });
   };
 
-  const updateNote = (code, note) => {
-    setStickers(prev => {
-      const current = prev[code] || { count: 0, note: '' };
-      const next = { ...prev, [code]: { ...current, note } };
-      updateFirebase(next);
-      return next;
-    });
-  };
+
 
   const logout = () => {
     auth.signOut();
   };
 
-  const resetAlbum = () => {
-    const emptyMap = generateEmptyStickersMap();
-    setStickers(emptyMap);
-    updateFirebase(emptyMap);
-  };
+
 
   const removeSticker = (code) => {
     setStickers(prev => {
@@ -140,9 +170,7 @@ export const StickerProvider = ({ children }) => {
       loading,
       incrementSticker,
       decrementSticker,
-      updateNote,
       logout,
-      resetAlbum,
       removeSticker,
       stats
     }}>

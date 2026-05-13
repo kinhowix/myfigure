@@ -39,41 +39,49 @@ export default function Collection() {
 
   const activeCodes = getActiveGroupCodes();
 
-  const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      const query = searchQuery.trim().toUpperCase();
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const query = searchQuery.trim().toUpperCase();
+    
+    // Try to detect sticker code (e.g., TUR 29 or TUR29)
+    const codeMatch = query.match(/^([A-Z]{2,3})\s*(\d+)$/);
+    
+    if (codeMatch) {
+      const prefix = codeMatch[1];
+      const numberStr = codeMatch[2];
+      const number = parseInt(numberStr);
       
-      // Try to detect sticker code (e.g., TUR 29 or TUR29)
-      const codeMatch = query.match(/^([A-Z]{2,3})\s*(\d+)$/);
-      
-      if (codeMatch) {
-        const prefix = codeMatch[1];
-        const numberStr = codeMatch[2];
-        const number = parseInt(numberStr);
+      const foundGroup = stickerGroups.find(g => g.prefix === prefix);
+      if (foundGroup) {
+        // Check if the number is valid for the group
+        const isZero = numberStr === '00' || number === 0;
+        const isValidNumber = (isZero && foundGroup.hasZero) || (number >= 1 && number <= foundGroup.count);
         
-        const foundGroup = stickerGroups.find(g => g.prefix === prefix);
-        if (foundGroup) {
-          // Check if the number is valid for the group
-          const isZero = numberStr === '00' || number === 0;
-          const isValidNumber = (isZero && foundGroup.hasZero) || (number >= 1 && number <= foundGroup.count);
+        if (isValidNumber) {
+          const finalCode = isZero ? '00' : `${prefix} ${number}`;
+          setSelectedGroupId(foundGroup.id);
+          setSearchQuery('');
+          setHighlightedCode(finalCode);
           
-          if (isValidNumber) {
-            const finalCode = isZero ? '00' : `${prefix} ${number}`;
-            setSelectedGroupId(foundGroup.id);
-            setSearchQuery('');
-            setHighlightedCode(finalCode);
-            
-            // Clear highlight after 3 seconds
-            setTimeout(() => setHighlightedCode(null), 3000);
-            return;
+          // Clear highlight after 3 seconds
+          setTimeout(() => setHighlightedCode(null), 3000);
+          
+          // Close mobile keyboard
+          if (document.activeElement) {
+            document.activeElement.blur();
           }
+          return;
         }
       }
+    }
 
-      // Fallback to normal country search if no code match
-      if (filteredGroups.length > 0) {
-        setSelectedGroupId(filteredGroups[0].id);
-        setSearchQuery('');
+    // Fallback to normal country search if no code match
+    if (filteredGroups.length > 0) {
+      setSelectedGroupId(filteredGroups[0].id);
+      setSearchQuery('');
+      // Close mobile keyboard
+      if (document.activeElement) {
+        document.activeElement.blur();
       }
     }
   };
@@ -99,17 +107,17 @@ export default function Collection() {
         </div>
 
         <div className="search-container">
-          <div className="search-input-wrapper">
+          <form className="search-input-wrapper" onSubmit={handleSearchSubmit}>
             <Search size={16} className="search-icon" />
             <input 
-              type="text" 
+              type="search" 
               placeholder="Buscar seleção..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
               className="search-input"
+              enterKeyHint="search"
             />
-          </div>
+          </form>
         </div>
         
         <div className="group-selector">
