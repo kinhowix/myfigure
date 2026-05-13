@@ -19,8 +19,10 @@ export const StickerProvider = ({ children }) => {
       
       // If no user, we can stop loading immediately
       if (!currentUser) {
+        // Sem usuário logado, libera o loading imediatamente
         setLoading(false);
       }
+      // Se há usuário, o loading será liberado pelo onSnapshot do Firestore
     });
 
     // Safety timeout: if nothing happens in 10 seconds, stop loading
@@ -43,6 +45,7 @@ export const StickerProvider = ({ children }) => {
     const albumRef = doc(db, 'albums', 'familia');
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
+      clearTimeout(safetyTimeout);
       if (docSnap.exists()) {
         const data = docSnap.data().stickers;
         console.log("Album data received");
@@ -55,12 +58,16 @@ export const StickerProvider = ({ children }) => {
       }
       setLoading(false);
     }, (error) => {
+      clearTimeout(safetyTimeout);
       console.error("Error fetching album:", error);
       // Even on error, we must stop loading so the app can render something
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      unsubscribe();
+    };
   }, [user]);
 
   // Actions
