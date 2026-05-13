@@ -11,7 +11,12 @@ function App() {
   const { user, loading } = useStickers();
 
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'white' }}>Carregando álbum...</div>;
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+        <p>Carregando Álbum da Família...</p>
+      </div>
+    );
   }
 
   if (!user) {

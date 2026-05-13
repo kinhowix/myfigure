@@ -14,32 +14,49 @@ export const StickerProvider = ({ children }) => {
   // Authentication Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Auth State Changed:", currentUser ? "Logged In" : "Logged Out");
       setUser(currentUser);
+      
+      // If no user, we can stop loading immediately
       if (!currentUser) {
         setLoading(false);
       }
     });
-    return () => unsubscribe();
+
+    // Safety timeout: if nothing happens in 10 seconds, stop loading
+    // to avoid the "blue screen of death" on mobile
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 10000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Firestore Listener for the Family Album
   useEffect(() => {
     if (!user) return;
 
+    console.log("Setting up Firestore listener for user:", user.email);
     const albumRef = doc(db, 'albums', 'familia');
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data().stickers;
+        console.log("Album data received");
         // Merge with empty map in case new codes were added to config
         setStickers(prev => ({ ...prev, ...data }));
       } else {
+        console.log("Album not found, creating new one");
         // First time initialization
         setDoc(albumRef, { stickers: generateEmptyStickersMap() });
       }
       setLoading(false);
     }, (error) => {
       console.error("Error fetching album:", error);
+      // Even on error, we must stop loading so the app can render something
       setLoading(false);
     });
 
