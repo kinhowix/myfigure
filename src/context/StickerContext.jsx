@@ -14,35 +14,45 @@ export const StickerProvider = ({ children }) => {
   // Authentication Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Auth State Changed:", currentUser ? "Logged In" : "Logged Out");
       setUser(currentUser);
+      
+      // If no user, we can stop loading immediately
       if (!currentUser) {
         // Sem usuário logado, libera o loading imediatamente
         setLoading(false);
       }
       // Se há usuário, o loading será liberado pelo onSnapshot do Firestore
     });
-    return () => unsubscribe();
+
+    // Safety timeout: if nothing happens in 10 seconds, stop loading
+    // to avoid the "blue screen of death" on mobile
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 10000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Firestore Listener for the Family Album
   useEffect(() => {
     if (!user) return;
 
-    // Timeout de segurança: se o Firestore demorar mais de 5s, libera o loading
-    // para evitar tela azul travada (problemas de rede no celular)
-    const safetyTimeout = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-
+    console.log("Setting up Firestore listener for user:", user.email);
     const albumRef = doc(db, 'albums', 'familia');
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       clearTimeout(safetyTimeout);
       if (docSnap.exists()) {
         const data = docSnap.data().stickers;
+        console.log("Album data received");
         // Merge with empty map in case new codes were added to config
         setStickers(prev => ({ ...prev, ...data }));
       } else {
+        console.log("Album not found, creating new one");
         // First time initialization
         setDoc(albumRef, { stickers: generateEmptyStickersMap() });
       }
@@ -50,6 +60,7 @@ export const StickerProvider = ({ children }) => {
     }, (error) => {
       clearTimeout(safetyTimeout);
       console.error("Error fetching album:", error);
+      // Even on error, we must stop loading so the app can render something
       setLoading(false);
     });
 
