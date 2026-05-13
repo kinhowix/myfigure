@@ -4,8 +4,8 @@ import './Repeated.css';
 import { LogOut } from 'lucide-react';
 
 export default function Repeated() {
-  const { stickers, updateNote, incrementSticker, decrementSticker, logout } = useStickers();
-  
+  const { stickers, incrementSticker, decrementSticker, logout } = useStickers();
+
   // Transform object to array and filter repeated
   const repeatedStickers = Object.entries(stickers)
     .filter(([code, data]) => data.count > 1)
@@ -22,7 +22,7 @@ export default function Repeated() {
           </button>
         </div>
       </div>
-      
+
       {repeatedStickers.length === 0 ? (
         <div className="empty-state">
           <p>Você não tem nenhuma figurinha repetida ainda!</p>
@@ -37,16 +37,11 @@ export default function Repeated() {
                 </div>
                 <div className="repeated-controls">
                   <button className="control-btn" onClick={() => decrementSticker(sticker.code)}>-</button>
-                  <span className="repeated-count">{sticker.count - 1} para troca</span>
+                  <span className="repeated-count">{sticker.count - 1} </span>
                   <button className="control-btn" onClick={() => incrementSticker(sticker.code)}>+</button>
                 </div>
               </div>
-              <textarea 
-                className="note-input"
-                placeholder="Ex: Prometida para o João, Trocada com o primo..."
-                value={sticker.note}
-                onChange={(e) => updateNote(sticker.code, e.target.value)}
-              />
+
             </div>
           ))}
         </div>
