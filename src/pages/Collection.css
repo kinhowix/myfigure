@@ -184,3 +184,21 @@
   margin-top: 1rem;
   padding: 0 1rem;
 }
+
+.sticker-card.highlight-pulse {
+  animation: pulse-border 1s infinite alternate;
+  z-index: 5;
+  box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+@keyframes pulse-border {
+  from {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.6);
+  }
+  to {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.8);
+  }
+}
