@@ -9,15 +9,21 @@ export default function Collection() {
   const { stickers, incrementSticker, removeSticker, logout } = useStickers();
   const [selectedGroupId, setSelectedGroupId] = useState(stickerGroups[0].id);
   const [searchQuery, setSearchQuery] = useState('');
+  const [highlightedCode, setHighlightedCode] = useState(null);
 
   const activeGroup = stickerGroups.find(g => g.id === selectedGroupId);
   const isCocaCola = activeGroup.id === 'cc';
 
+  const normalizeString = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  };
+
   // Filter groups for the dropdown based on search
-  const filteredGroups = stickerGroups.filter(group => 
-    group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    group.prefix.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredGroups = stickerGroups.filter(group => {
+    const normalizedQuery = normalizeString(searchQuery);
+    return normalizeString(group.name).includes(normalizedQuery) ||
+           normalizeString(group.prefix).includes(normalizedQuery);
+  });
 
   // Generates the codes for the active group
   const getActiveGroupCodes = () => {
@@ -34,9 +40,41 @@ export default function Collection() {
   const activeCodes = getActiveGroupCodes();
 
   const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter' && filteredGroups.length > 0) {
-      setSelectedGroupId(filteredGroups[0].id);
-      setSearchQuery('');
+    if (e.key === 'Enter') {
+      const query = searchQuery.trim().toUpperCase();
+      
+      // Try to detect sticker code (e.g., TUR 29 or TUR29)
+      const codeMatch = query.match(/^([A-Z]{2,3})\s*(\d+)$/);
+      
+      if (codeMatch) {
+        const prefix = codeMatch[1];
+        const numberStr = codeMatch[2];
+        const number = parseInt(numberStr);
+        
+        const foundGroup = stickerGroups.find(g => g.prefix === prefix);
+        if (foundGroup) {
+          // Check if the number is valid for the group
+          const isZero = numberStr === '00' || number === 0;
+          const isValidNumber = (isZero && foundGroup.hasZero) || (number >= 1 && number <= foundGroup.count);
+          
+          if (isValidNumber) {
+            const finalCode = isZero ? '00' : `${prefix} ${number}`;
+            setSelectedGroupId(foundGroup.id);
+            setSearchQuery('');
+            setHighlightedCode(finalCode);
+            
+            // Clear highlight after 3 seconds
+            setTimeout(() => setHighlightedCode(null), 3000);
+            return;
+          }
+        }
+      }
+
+      // Fallback to normal country search if no code match
+      if (filteredGroups.length > 0) {
+        setSelectedGroupId(filteredGroups[0].id);
+        setSearchQuery('');
+      }
     }
   };
 
@@ -98,7 +136,7 @@ export default function Collection() {
           return (
             <div 
               key={code} 
-              className={`sticker-card ${stickerData.count > 0 ? 'owned' : 'missing'}`}
+              className={`sticker-card ${stickerData.count > 0 ? 'owned' : 'missing'} ${highlightedCode === code ? 'highlight-pulse' : ''}`}
               onClick={() => incrementSticker(code)}
               onContextMenu={(e) => {
                 e.preventDefault();
