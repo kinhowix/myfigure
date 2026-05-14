@@ -154,7 +154,27 @@ export const StickerProvider = ({ children }) => {
 
 
   const logout = () => {
-    auth.signOut();
+    auth.signOut().then(() => {
+      // Verifica se é mobile (iOS ou Android)
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // No celular, tenta fechar a aba (comportamento de fechar app)
+        // Nota: window.close() só funciona se a aba foi aberta pelo script ou em modo standalone PWA em alguns casos
+        window.close();
+        
+        // Se não fechar, redireciona para a home após um breve delay
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
+      } else {
+        // No PC, força o redirecionamento para a página inicial (Landing)
+        window.location.href = '/';
+      }
+    }).catch(err => {
+      console.error("Erro ao sair:", err);
+      window.location.href = '/';
+    });
   };
 
 
