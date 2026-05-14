@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../firebase/config';
 import { stickerGroups, generateEmptyStickersMap, getTotalStickersCount } from '../data/stickersConfig';
@@ -44,7 +44,9 @@ export const StickerProvider = ({ children }) => {
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       if (docSnap.exists()) {
-        const dbData = docSnap.data().stickers || {};
+        const allData = docSnap.data() || {};
+        // Tenta pegar do campo 'stickers' ou da raiz do documento (retrocompatibilidade)
+        const dbData = allData.stickers || allData;
         const emptyMap = generateEmptyStickersMap();
         
         // Create a fast lookup map (no spaces, uppercase)
@@ -105,18 +107,33 @@ export const StickerProvider = ({ children }) => {
   }, [user]);
 
   // Actions
-  const updateFirebase = (newStickers) => {
+  const updateFirebase = async (code, stickerData) => {
     if (!user) return;
     const albumRef = doc(db, 'albums', 'familia');
-    setDoc(albumRef, { stickers: newStickers }, { merge: true });
+    try {
+      // Atualização atômica: atualiza apenas uma figurinha no mapa 'stickers'
+      // Isso é muito mais performático e evita sobrescrever dados de outros usuários
+      await updateDoc(albumRef, {
+        [`stickers.${code}`]: stickerData
+      });
+    } catch (error) {
+      console.error("Erro na atualização atômica, tentando merge:", error);
+      // Fallback para setDoc caso o campo stickers ainda não exista
+      await setDoc(albumRef, { 
+        stickers: { [code]: stickerData } 
+      }, { merge: true });
+    }
   };
 
   const incrementSticker = (code) => {
     setStickers(prev => {
       const current = prev[code] || { count: 0, note: '' };
-      const next = { ...prev, [code]: { ...current, count: current.count + 1 } };
-      updateFirebase(next);
-      return next;
+      const nextData = { ...current, count: current.count + 1 };
+      
+      // Agenda a atualização no Firebase (fora do ciclo de renderização direta)
+      setTimeout(() => updateFirebase(code, nextData), 0);
+      
+      return { ...prev, [code]: nextData };
     });
   };
 
@@ -124,9 +141,11 @@ export const StickerProvider = ({ children }) => {
     setStickers(prev => {
       const current = prev[code] || { count: 0, note: '' };
       if (current.count > 0) {
-        const next = { ...prev, [code]: { ...current, count: current.count - 1 } };
-        updateFirebase(next);
-        return next;
+        const nextData = { ...current, count: current.count - 1 };
+        
+        setTimeout(() => updateFirebase(code, nextData), 0);
+        
+        return { ...prev, [code]: nextData };
       }
       return prev;
     });
@@ -143,9 +162,11 @@ export const StickerProvider = ({ children }) => {
   const removeSticker = (code) => {
     setStickers(prev => {
       const current = prev[code] || { count: 0, note: '' };
-      const next = { ...prev, [code]: { ...current, count: 0 } };
-      updateFirebase(next);
-      return next;
+      const nextData = { ...current, count: 0 };
+      
+      setTimeout(() => updateFirebase(code, nextData), 0);
+      
+      return { ...prev, [code]: nextData };
     });
   };
 
