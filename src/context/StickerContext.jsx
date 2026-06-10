@@ -44,6 +44,12 @@ export const StickerProvider = ({ children }) => {
     console.log("Setting up Firestore listener for user:", user.email);
     const albumRef = doc(db, 'albums', 'familia');
 
+    // Safety timeout: se o Firestore não responder em 10s, libera o loading
+    const safetyTimeout = setTimeout(() => {
+      console.warn("Firestore timeout - releasing loading state");
+      setLoading(false);
+    }, 10000);
+
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       clearTimeout(safetyTimeout);
       if (docSnap.exists()) {
@@ -55,7 +61,7 @@ export const StickerProvider = ({ children }) => {
         // Create a fast lookup map (no spaces, uppercase)
         const dbLookup = {};
         Object.entries(dbData).forEach(([key, val]) => {
-          if (key && val) {
+          if (key && val != null) {
             const normalizedKey = key.replace(/\s+/g, '').toUpperCase();
             dbLookup[normalizedKey] = val;
           }
@@ -67,11 +73,11 @@ export const StickerProvider = ({ children }) => {
           const normalizedConfigKey = configKey.replace(/\s+/g, '').toUpperCase();
           
           // 1. Try exact match
-          if (dbData[configKey]) {
+          if (dbData[configKey] != null) {
             mergedStickers[configKey] = dbData[configKey];
           } 
           // 2. Try normalized match (handles "BRA1" vs "BRA 1")
-          else if (dbLookup[normalizedConfigKey]) {
+          else if (dbLookup[normalizedConfigKey] != null) {
             mergedStickers[configKey] = dbLookup[normalizedConfigKey];
           }
           // 3. Try flag-based fallback (handles prefix changes like "BR" -> "BRA")
@@ -86,9 +92,9 @@ export const StickerProvider = ({ children }) => {
               const flagKey = number ? `${flagPrefix} ${number}` : flagPrefix;
               const normalizedFlagKey = flagKey.replace(/\s+/g, '').toUpperCase();
               
-              if (dbData[flagKey]) {
+              if (dbData[flagKey] != null) {
                 mergedStickers[configKey] = dbData[flagKey];
-              } else if (dbLookup[normalizedFlagKey]) {
+              } else if (dbLookup[normalizedFlagKey] != null) {
                 mergedStickers[configKey] = dbLookup[normalizedFlagKey];
               }
             }
