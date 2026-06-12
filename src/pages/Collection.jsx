@@ -38,6 +38,7 @@ export default function Collection() {
   };
 
   const activeCodes = getActiveGroupCodes();
+  const missingInGroup = activeCodes.filter(code => (stickers[code]?.count || 0) === 0).length;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -98,8 +99,15 @@ export default function Collection() {
                 className="team-flag"
               />
             )}
-            {isCocaCola && <div className="coca-cola-logo">Coca-Cola</div>}
-            <h1>{activeGroup.name}</h1>
+            <div className="team-title-wrapper">
+              {isCocaCola && <div className="coca-cola-logo">Coca-Cola</div>}
+              <h1>{activeGroup.name}</h1>
+              {missingInGroup === 0 ? (
+                <span className="group-missing-badge complete">✓ Completa!</span>
+              ) : (
+                <span className="group-missing-badge">Faltam {missingInGroup}</span>
+              )}
+            </div>
           </div>
           <button className="logout-btn" onClick={logout} title="Sair">
             <LogOut size={20} />

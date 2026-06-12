@@ -75,4 +75,101 @@
 .stat-card.warning .stat-value { color: var(--warning-color); }
 .stat-card.danger .stat-value { color: var(--danger-color); }
 
+.share-whatsapp-btn {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.share-whatsapp-btn:hover {
+  background-color: #20ba5a;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+  transform: translateY(-2px);
+}
+
+.share-whatsapp-btn:active {
+  transform: translateY(0);
+}
+
+.completed-countries-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.completed-countries-section h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--surface-highlight);
+  padding-bottom: 0.5rem;
+}
+
+.no-completed-card {
+  background-color: var(--surface-color);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px dashed var(--surface-highlight);
+  color: var(--text-secondary);
+}
+
+.completed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.completed-group-card {
+  background-color: var(--surface-color);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-left: 4px solid var(--surface-highlight);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.completed-group-flag {
+  width: 24px;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.completed-group-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.completed-group-check {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
