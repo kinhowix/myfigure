@@ -10,8 +10,8 @@ const getFlagEmoji = (flagCode) => {
   const specialEmojis = {
     'un': '⭐',
     'cc': '🥤',
-    'gb-sct': '🏴\u{B354}\u{B347}\u{B353}\u{B343}\u{B354}\u{B37f}', // Scotland flag emoji
-    'gb-eng': '🏴\u{B354}\u{B347}\u{B345}\u{B34e}\u{B347}\u{B37f}'  // England flag emoji
+    'gb-sct': String.fromCodePoint(0x1F3F4, 0xE0067, 0xE0062, 0xE0073, 0xE0063, 0xE0074, 0xE007F), // Scotland flag 🏴󠁧󠁢󠁳󠁣󠁴󠁿
+    'gb-eng': String.fromCodePoint(0x1F3F4, 0xE0067, 0xE0062, 0xE0065, 0xE006E, 0xE0067, 0xE007F)  // England flag 🏴󠁧󠁢󠁥󠁮󠁧󠁿
   };
   if (specialEmojis[flagCode.toLowerCase()]) {
     return specialEmojis[flagCode.toLowerCase()];
