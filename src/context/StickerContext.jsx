@@ -6,6 +6,26 @@ import { stickerGroups, generateEmptyStickersMap, getTotalStickersCount } from '
 
 const StickerContext = createContext();
 
+// Helper to normalize different data structures of a sticker (numbers or objects)
+const normalizeStickerValue = (val) => {
+  if (val == null) return { count: 0, note: '' };
+  
+  if (typeof val === 'object' && val !== null) {
+    const count = typeof val.count === 'number' ? val.count : parseInt(val.count, 10);
+    return {
+      count: isNaN(count) ? 0 : count,
+      note: val.note || ''
+    };
+  }
+  
+  // If it's a number or a string representing a number
+  const parsedCount = parseInt(val, 10);
+  return {
+    count: isNaN(parsedCount) ? 0 : parsedCount,
+    note: ''
+  };
+};
+
 export const StickerProvider = ({ children }) => {
   const [stickers, setStickers] = useState(generateEmptyStickersMap());
   const [user, setUser] = useState(null);
@@ -52,10 +72,18 @@ export const StickerProvider = ({ children }) => {
 
     const unsubscribe = onSnapshot(albumRef, (docSnap) => {
       clearTimeout(safetyTimeout);
+      console.log("Firestore onSnapshot triggered. Exists:", docSnap.exists());
       if (docSnap.exists()) {
         const allData = docSnap.data() || {};
-        // Tenta pegar do campo 'stickers' ou da raiz do documento (retrocompatibilidade)
-        const dbData = allData.stickers || allData;
+        console.log("Firestore document raw data:", allData);
+        
+        // Extrai os stickers do objeto stickers (se houver)
+        const nestedStickers = allData.stickers || {};
+        // Combina o nível raiz (para retrocompatibilidade) com os stickers aninhados
+        // Os aninhados têm prioridade
+        const dbData = { ...allData, ...nestedStickers };
+        delete dbData.stickers; // evita tratar a chave 'stickers' como figurinha
+
         const emptyMap = generateEmptyStickersMap();
         
         // Create a fast lookup map (no spaces, uppercase)
@@ -72,13 +100,15 @@ export const StickerProvider = ({ children }) => {
         Object.keys(mergedStickers).forEach(configKey => {
           const normalizedConfigKey = configKey.replace(/\s+/g, '').toUpperCase();
           
+          let dbValue = null;
+          
           // 1. Try exact match
           if (dbData[configKey] != null) {
-            mergedStickers[configKey] = dbData[configKey];
+            dbValue = dbData[configKey];
           } 
           // 2. Try normalized match (handles "BRA1" vs "BRA 1")
           else if (dbLookup[normalizedConfigKey] != null) {
-            mergedStickers[configKey] = dbLookup[normalizedConfigKey];
+            dbValue = dbLookup[normalizedConfigKey];
           }
           // 3. Try flag-based fallback (handles prefix changes like "BR" -> "BRA")
           else {
@@ -93,11 +123,15 @@ export const StickerProvider = ({ children }) => {
               const normalizedFlagKey = flagKey.replace(/\s+/g, '').toUpperCase();
               
               if (dbData[flagKey] != null) {
-                mergedStickers[configKey] = dbData[flagKey];
+                dbValue = dbData[flagKey];
               } else if (dbLookup[normalizedFlagKey] != null) {
-                mergedStickers[configKey] = dbLookup[normalizedFlagKey];
+                dbValue = dbLookup[normalizedFlagKey];
               }
             }
+          }
+
+          if (dbValue != null) {
+            mergedStickers[configKey] = normalizeStickerValue(dbValue);
           }
         });
 
